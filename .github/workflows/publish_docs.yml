@@ -1,93 +1,96 @@
-name: Publish Docs
+name: Publish Docs 
+ 
+on: 
+  push: 
+    branches: [main] 
+ 
+jobs: 
+  generate-docs: 
+    runs-on: ubuntu-latest 
+ 
+    steps: 
+      - name: Checkout repository 
+        uses: actions/checkout@v3 
+ 
+      - name: Set up Node.js 
+        uses: actions/setup-node@v3 
+        with: 
+          node-version: '20' 
+ 
+      - name: Install dependencies (customer-app) 
+        run: npm install 
+        working-directory: ./customer-app 
+ 
+      - name: Generate documentation (customer-app) 
+        run: npx compodoc -p tsconfig.json -d ../docs-build/customer-app --silent 
+        working-directory: ./customer-app 
+ 
+      - name: Install dependencies (notifications) 
+        run: npm install 
+        working-directory: ./notifications 
+ 
+      - name: Generate documentation (notifications) 
+        run: npx compodoc -p tsconfig.json -d ../docs-build/notifications --silent 
+        working-directory: ./notifications 
+ 
+      - name: Create index.html with project links 
+        run: | 
+          mkdir -p docs-build 
+          echo '<!DOCTYPE html> 
+          <html lang="es"> 
+          <head> 
+            <meta charset="UTF-8"> 
+            <meta name="viewport" content="width=device-width, initial-scale=1"> 
+            <title>Documentación del Proyecto</title> 
+            <style> 
+              body { 
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; 
+                background: #f9f9f9; 
+                color: #333; 
+                display: flex; 
+                flex-direction: column; 
+                align-items: center; 
+                justify-content: center; 
+                height: 100vh; 
+                margin: 0; 
+                padding: 20px; 
+              } 
+              h1 { 
+                margin-bottom: 20px; 
+              } 
+              .button-container { 
+                display: flex; 
+                gap: 20px; 
+              } 
+              .button-container a { 
+                text-decoration: none; 
+                padding: 15px 30px; 
+                background-color: #007acc; 
+                color: white; 
+                border-radius: 8px; 
+                font-size: 16px; 
+                transition: background-color 0.3s ease; 
+              } 
+              .button-container a:hover { 
+                background-color: #005fa3; 
+              } 
+            </style> 
+          </head> 
+          <body> 
+            <h1>Documentación del Proyecto</h1> 
+            <div class="button-container"> 
+              <a href="notifications/index.html" target="_blank">📬 Notifications</a> 
+              <a href="customer-app/index.html" target="_blank">👤 Customer App</a> 
+            </div> 
+          </body> 
+          </html>' > docs-build/index.html 
 
-on:
-  push:
-    branches: [main]
-
-jobs:
-  generate-docs:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Install dependencies (customer-app)
-        run: npm install
-        working-directory: ./customer-app
-
-      - name: Generate documentation (customer-app)
-        run: npx compodoc -p tsconfig.json -d ${{ github.workspace }}/documentation/customer-app --silent
-        working-directory: ./customer-app
-
-      - name: Install dependencies (notifications)
-        run: npm install
-        working-directory: ./notifications
-
-      - name: Generate documentation (notifications)
-        run: npx compodoc -p tsconfig.json -d ${{ github.workspace }}/documentation/notifications --silent
-        working-directory: ./notifications
-
-      - name: Create index.html with project links
-        run: |
-          mkdir -p documentation
-          echo '<!DOCTYPE html>
-          <html lang="es">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>Documentación del Proyecto</title>
-            <style>
-              body {
-                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-                background: #f9f9f9;
-                color: #333;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                height: 100vh;
-                margin: 0;
-                padding: 20px;
-              }
-              h1 {
-                margin-bottom: 20px;
-              }
-              .button-container {
-                display: flex;
-                gap: 20px;
-              }
-              .button-container a {
-                text-decoration: none;
-                padding: 15px 30px;
-                background-color: #007acc;
-                color: white;
-                border-radius: 8px;
-                font-size: 16px;
-                transition: background-color 0.3s ease;
-              }
-              .button-container a:hover {
-                background-color: #005fa3;
-              }
-            </style>
-          </head>
-          <body>
-            <h1>Documentación del Proyecto</h1>
-            <div class="button-container">
-              <a href="notifications/index.html" target="_blank">📬 Notifications</a>
-              <a href="customer-app/index.html" target="_blank">👤 Customer App</a>
-            </div>
-          </body>
-          </html>' > documentation/index.html
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./documentation
+      - name: Create .nojekyll file
+        run: touch docs-build/.nojekyll
+ 
+      - name: Deploy to GitHub Pages 
+        uses: peaceiris/actions-gh-pages@v3 
+        with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }} 
+          publish_dir: ./docs-build 
           publish_branch: gh-pages
