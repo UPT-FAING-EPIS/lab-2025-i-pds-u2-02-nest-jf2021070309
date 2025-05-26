@@ -16,26 +16,29 @@ jobs:
         uses: actions/setup-node@v3 
         with: 
           node-version: '20' 
+
+      - name: Create build directory structure
+        run: |
+          mkdir -p docs-build
+          mkdir -p docs-build/customer-app
+          mkdir -p docs-build/notifications
  
-      - name: Install dependencies (customer-app) 
-        run: npm install 
+      - name: Install dependencies and generate docs (customer-app) 
+        run: |
+          npm install
+          npx compodoc -p tsconfig.json -d docs --silent
+          cp -r docs/* ../docs-build/customer-app/
         working-directory: ./customer-app 
  
-      - name: Generate documentation (customer-app) 
-        run: npx compodoc -p tsconfig.json -d ../docs-build/customer-app --silent 
-        working-directory: ./customer-app 
- 
-      - name: Install dependencies (notifications) 
-        run: npm install 
-        working-directory: ./notifications 
- 
-      - name: Generate documentation (notifications) 
-        run: npx compodoc -p tsconfig.json -d ../docs-build/notifications --silent 
+      - name: Install dependencies and generate docs (notifications) 
+        run: |
+          npm install
+          npx compodoc -p tsconfig.json -d docs --silent
+          cp -r docs/* ../docs-build/notifications/
         working-directory: ./notifications 
  
       - name: Create index.html with project links 
         run: | 
-          mkdir -p docs-build 
           echo '<!DOCTYPE html> 
           <html lang="es"> 
           <head> 
@@ -94,3 +97,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }} 
           publish_dir: ./docs-build 
           publish_branch: gh-pages
+          force_orphan: true
