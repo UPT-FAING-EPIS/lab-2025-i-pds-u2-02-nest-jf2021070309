@@ -22,7 +22,7 @@ jobs:
         working-directory: ./customer-app
 
       - name: Generate documentation (customer-app)
-        run: npx compodoc -p tsconfig.json -d ../documentation/customer-app --silent
+        run: npx compodoc -p tsconfig.json -d documentation/customer-app --silent
         working-directory: ./customer-app
 
       - name: Install dependencies (notifications)
@@ -30,7 +30,7 @@ jobs:
         working-directory: ./notifications
 
       - name: Generate documentation (notifications)
-        run: npx compodoc -p tsconfig.json -d ../documentation/notifications --silent
+        run: npx compodoc -p tsconfig.json -d documentation/notifications --silent
         working-directory: ./notifications
 
       - name: Create index.html with project links
