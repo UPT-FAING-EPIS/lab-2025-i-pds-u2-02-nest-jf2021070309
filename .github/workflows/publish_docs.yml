@@ -1,0 +1,41 @@
+name: Publish Docs
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies (notifications)
+        run: npm install
+        working-directory: ./notifications
+
+      - name: Install dependencies (customer-app)
+        run: npm install
+        working-directory: ./customer-app
+
+      - name: Generate documentation for notifications
+        run: npx compodoc -p tsconfig.json -d ../docs/notifications --silent
+        working-directory: ./notifications
+
+      - name: Generate documentation for customer-app
+        run: npx compodoc -p tsconfig.json -d ../docs/customer-app --silent
+        working-directory: ./customer-app
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs
+          publish_branch: gh-pages
