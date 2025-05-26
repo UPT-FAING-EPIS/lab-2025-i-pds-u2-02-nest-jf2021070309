@@ -1,0 +1,100 @@
+name: Package and Publish to GitHub
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-build-sonar-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (customer-app)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://npm.pkg.github.com/'
+          scope: '@${{ secrets.GH_USERNAME }}'
+
+      # ---------- customer-app ----------
+      - name: Install dependencies (customer-app)
+        run: npm ci
+        working-directory: ./customer-app
+
+      - name: Run tests with coverage (customer-app)
+        run: npm run test:cov
+        working-directory: ./customer-app
+
+      - name: Run SonarCloud analysis (customer-app)
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          args: >
+            -Dsonar.projectKey=jaimeflores_lab2-u2-customer-app
+            -Dsonar.organization=jaimeflores
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.sources=src
+            -Dsonar.exclusions=**/*.spec.ts
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=**/*.spec.ts
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+          projectBaseDir: ./customer-app
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build project (customer-app)
+        run: npm run build
+        working-directory: ./customer-app
+
+      - name: Publish package to GitHub Packages (customer-app)
+        run: npm publish
+        working-directory: ./customer-app
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ---------- notifications ----------
+      - name: Set up Node.js (notifications)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://npm.pkg.github.com/'
+          scope: '@${{ secrets.GH_USERNAME }}'
+
+      - name: Install dependencies (notifications)
+        run: npm ci
+        working-directory: ./notifications
+
+      - name: Run tests with coverage (notifications)
+        run: npm run test:cov
+        working-directory: ./notifications
+
+      - name: Run SonarCloud analysis (notifications)
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          args: >
+            -Dsonar.projectKey=jaimeflores_lab2-u2-notifications
+            -Dsonar.organization=jaimeflores
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.sources=src
+            -Dsonar.exclusions=**/*.spec.ts
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=**/*.spec.ts
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+          projectBaseDir: ./notifications
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build project (notifications)
+        run: npm run build
+        working-directory: ./notifications
+
+      - name: Publish package to GitHub Packages (notifications)
+        run: npm publish
+        working-directory: ./notifications
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
