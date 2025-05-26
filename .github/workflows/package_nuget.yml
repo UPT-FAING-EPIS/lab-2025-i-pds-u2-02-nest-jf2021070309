@@ -50,7 +50,7 @@ jobs:
         run: npm run build
         working-directory: ./customer-app
 
-      - name: Publish package to GitHub Packages (customer-app)
+      - name: Publish package to GitHub Packages npm-nuget (customer-app)
         run: npm publish
         working-directory: ./customer-app
         env:
@@ -93,7 +93,7 @@ jobs:
         run: npm run build
         working-directory: ./notifications
 
-      - name: Publish package to GitHub Packages (notifications)
+      - name: Publish package to GitHub Packages npm-nuget (notifications)
         run: npm publish
         working-directory: ./notifications
         env:
