@@ -44,7 +44,7 @@ jobs:
           projectBaseDir: ./customer-app
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Build project (customer-app)
         run: npm run build
@@ -54,7 +54,7 @@ jobs:
         run: npm publish
         working-directory: ./customer-app
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       # ---------- notifications ----------
       - name: Set up Node.js (notifications)
@@ -87,7 +87,7 @@ jobs:
           projectBaseDir: ./notifications
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Build project (notifications)
         run: npm run build
@@ -97,4 +97,4 @@ jobs:
         run: npm publish
         working-directory: ./notifications
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
