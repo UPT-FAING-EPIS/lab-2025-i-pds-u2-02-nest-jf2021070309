@@ -77,7 +77,7 @@ jobs:
             </style>
           </head>
           <body>
-            <h1>Documentación del Proyecto</h1>
+            <h1>Documentación de los Proyectos</h1>
             <div class="button-container">
               <a href="notifications/index.html" target="_blank">📬 Notifications</a>
               <a href="customer-app/index.html" target="_blank">👤 Customer App</a>
