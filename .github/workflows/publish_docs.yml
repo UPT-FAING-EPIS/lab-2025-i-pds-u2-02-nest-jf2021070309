@@ -17,27 +17,22 @@ jobs:
         with:
           node-version: '20'
 
-      # Instalar dependencias customer-app
       - name: Install dependencies (customer-app)
         run: npm install
         working-directory: ./customer-app
 
-      # Generar docs customer-app desde la raíz del repo, apuntando al tsconfig dentro de customer-app y salida en documentation/customer-app
       - name: Generate documentation (customer-app)
-        run: npx compodoc -p ./customer-app/tsconfig.json -d ./documentation/customer-app --silent
-        working-directory: ./
+        run: npx compodoc -p tsconfig.json -d ${{ github.workspace }}/documentation/customer-app --silent
+        working-directory: ./customer-app
 
-      # Instalar dependencias notifications
       - name: Install dependencies (notifications)
         run: npm install
         working-directory: ./notifications
 
-      # Generar docs notifications
       - name: Generate documentation (notifications)
-        run: npx compodoc -p ./notifications/tsconfig.json -d ./documentation/notifications --silent
-        working-directory: ./
+        run: npx compodoc -p tsconfig.json -d ${{ github.workspace }}/documentation/notifications --silent
+        working-directory: ./notifications
 
-      # Crear archivo index.html con links a las dos documentaciones
       - name: Create index.html with project links
         run: |
           mkdir -p documentation
@@ -90,7 +85,6 @@ jobs:
           </body>
           </html>' > documentation/index.html
 
-      # Publicar en GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
